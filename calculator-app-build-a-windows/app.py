@@ -1,7 +1,9 @@
 import gradio as gr
 
-def calculator(num1, operator, num2):
+def calculate(num1, operator, num2):
     try:
+        num1 = float(num1)
+        num2 = float(num2)
         if operator == "+":
             return num1 + num2
         elif operator == "-":
@@ -15,113 +17,52 @@ def calculator(num1, operator, num2):
                 return num1 / num2
         else:
             return "Invalid operator"
+    except ValueError:
+        return "Invalid input"
+
+def button_click(num1, operator, num2, button):
+    try:
+        if button == "C":
+            return "", "", ""
+        elif button == "=":
+            return num1, operator, str(calculate(num1, operator, num2))
+        elif button in ["+", "-", "*", "/"]:
+            return num1, button, num2
+        elif button.isdigit():
+            if num1 == "":
+                return button, operator, num2
+            elif operator == "":
+                return num1 + button, operator, num2
+            else:
+                return num1, operator, num2 + button
+        else:
+            return num1, operator, num2
     except Exception as e:
-        return str(e)
+        return num1, operator, num2
 
 demo = gr.Blocks()
 
 with demo:
-    gr.Markdown("# Calculator App")
-    num1 = gr.Number(label="Number 1")
-    operator = gr.Dropdown(label="Operator", choices=["+", "-", "*", "/"])
-    num2 = gr.Number(label="Number 2")
-    result = gr.Number(label="Result")
+    num1 = gr.Textbox(label="Number 1", placeholder="Enter number 1")
+    num2 = gr.Textbox(label="Number 2", placeholder="Enter number 2")
+    operator = gr.Textbox(label="Operator", placeholder="Operator")
 
-    gr.Button("Calculate").click(
-        calculator,
-        inputs=[num1, operator, num2],
-        outputs=result,
-    )
+    buttons = [
+        ["7", "8", "9", "/"],
+        ["4", "5", "6", "*"],
+        ["1", "2", "3", "-"],
+        ["0", "C", "=", "+"],
+    ]
 
-    gr.Button("Clear").click(
-        lambda: [0, None, 0, None],
-        inputs=None,
-        outputs=[num1, operator, num2, result],
-    )
-
-    gr.Button("7").click(
-        lambda: 7,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("8").click(
-        lambda: 8,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("9").click(
-        lambda: 9,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("/").click(
-        lambda: "/",
-        inputs=None,
-        outputs=operator,
-    )
-
-    gr.Button("4").click(
-        lambda: 4,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("5").click(
-        lambda: 5,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("6").click(
-        lambda: 6,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("*").click(
-        lambda: "*",
-        inputs=None,
-        outputs=operator,
-    )
-
-    gr.Button("1").click(
-        lambda: 1,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("2").click(
-        lambda: 2,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("3").click(
-        lambda: 3,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("-").click(
-        lambda: "-",
-        inputs=None,
-        outputs=operator,
-    )
-
-    gr.Button("0").click(
-        lambda: 0,
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button(".").click(
-        lambda: ".",
-        inputs=None,
-        outputs=num1,
-    )
-    gr.Button("=").click(
-        lambda: "=",
-        inputs=None,
-        outputs=None,
-    )
-    gr.Button("+").click(
-        lambda: "+",
-        inputs=None,
-        outputs=operator,
-    )
+    for row in buttons:
+        with gr.Row():
+            for button in row:
+                gr.Button(button).click(
+                    button_click,
+                    inputs=[num1, operator, num2, gr.Button(button)],
+                    outputs=[num1, operator, num2],
+                    queue=False,
+                )
 
 if __name__ == "__main__":
     demo.launch()
