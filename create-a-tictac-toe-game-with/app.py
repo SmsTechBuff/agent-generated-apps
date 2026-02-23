@@ -1,62 +1,72 @@
 import gradio as gr
 import random
 
-# Initialize the game board
-board = [[' ' for _ in range(3)] for _ in range(3)]
+def update_board(board, row, col, turn):
+    if board[row][col] == "":
+        board[row][col] = turn
+        return board
+    else:
+        return board
 
-# Function to check if the game is won
-def check_win(board):
+def check_winner(board):
     for i in range(3):
-        if board[i][0] == board[i][1] == board[i][2] != ' ':
+        if board[i][0] == board[i][1] == board[i][2] != "":
             return board[i][0]
-        if board[0][i] == board[1][i] == board[2][i] != ' ':
+        if board[0][i] == board[1][i] == board[2][i] != "":
             return board[0][i]
-    if board[0][0] == board[1][1] == board[2][2] != ' ':
+    if board[0][0] == board[1][1] == board[2][2] != "":
         return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] != ' ':
+    if board[0][2] == board[1][1] == board[2][0] != "":
         return board[0][2]
     return None
 
-# Function to handle the game logic
-def play_game(clicks):
-    global board
-    if clicks is None:
-        return board, "Your turn"
-    row, col = clicks
-    if board[row][col] != ' ':
-        return board, "Invalid move, try again"
-    board[row][col] = 'X'
-    winner = check_win(board)
-    if winner is not None:
-        return board, f"Game over, {winner} wins"
-    # System's turn
-    empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] == ' ']
-    if empty_cells:
-        system_row, system_col = random.choice(empty_cells)
-        board[system_row][system_col] = 'O'
-        winner = check_win(board)
-        if winner is not None:
-            return board, f"Game over, {winner} wins"
-    return board, "Your turn"
+def system_turn(board):
+    possible_moves = [(i, j) for i in range(3) for j in range(3) if board[i][j] == ""]
+    if possible_moves:
+        i, j = random.choice(possible_moves)
+        board[i][j] = "O"
+    return board
 
-# Create the Gradio interface
-demo = gr.Interface(
-    play_game,
-    gr.Grid(
-        [gr.Button(label=" ") for _ in range(9)],
-        rows=3,
-        columns=3,
-        show_label=False
-    ),
-    [gr.Grid(
-        [gr.Textbox(label=" ") for _ in range(9)],
-        rows=3,
-        columns=3,
-        show_label=False
-    ), gr.Textbox(label="Message")],
-    title="Tic Tac Toe Game",
-    description="Play Tic Tac Toe against the system"
-)
+def play_game(row, col, board, turn):
+    board = update_board(board, row, col, turn)
+    winner = check_winner(board)
+    if winner:
+        return board, f"Player {winner} wins!"
+    elif all(all(cell != "" for cell in row) for row in board):
+        return board, "It's a draw!"
+    board = system_turn(board)
+    winner = check_winner(board)
+    if winner:
+        return board, f"Player {winner} wins!"
+    elif all(all(cell != "" for cell in row) for row in board):
+        return board, "It's a draw!"
+    return board, ""
+
+demo = gr.Blocks()
+
+with demo:
+    gr.Markdown("# Tic Tac Toe Game")
+    grid = []
+    for i in range(3):
+        row = []
+        for j in range(3):
+            row.append(gr.Button(label="", show_label=False))
+        grid.append(row)
+
+    state = gr.State(value=[["" for _ in range(3)] for _ in range(3)])
+    result = gr.Textbox(label="Result")
+
+    for i in range(3):
+        for j in range(3):
+            grid[i][j].click(
+                lambda row=i, col=j: play_game(row, col, state.value, "X"),
+                inputs=[state],
+                outputs=[state, result, *[grid[x][y] for x in range(3) for y in range(3)]],
+            )
+
+    for i in range(3):
+        for j in range(3):
+            grid[i][j].style(rounded=True, height=100, width=100)
 
 if __name__ == "__main__":
     demo.launch()
