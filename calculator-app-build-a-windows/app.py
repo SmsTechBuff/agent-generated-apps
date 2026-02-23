@@ -1,22 +1,28 @@
 import gradio as gr
 
-def calculator_interface(math_expression):
+def calculate(expression):
     try:
-        result = eval(math_expression)
-        return str(result)
+        return str(eval(expression))
     except ZeroDivisionError:
         return "Error: Division by zero"
     except Exception as e:
         return str(e)
 
-def clear_input(math_expression):
+def clear_textbox():
     return ""
+
+def update_textbox(textbox_value, button_value):
+    if button_value == "=":
+        return calculate(textbox_value)
+    elif button_value == "C":
+        return clear_textbox()
+    else:
+        return textbox_value + button_value
 
 demo = gr.Blocks()
 
 with demo:
-    math_expression = gr.Textbox(label="Calculator")
-    result = gr.Textbox(label="Result")
+    textbox = gr.Textbox(label="Calculator", placeholder="Enter expression")
 
     button_7 = gr.Button("7")
     button_8 = gr.Button("8")
@@ -35,118 +41,38 @@ with demo:
 
     button_0 = gr.Button("0")
     button_dot = gr.Button(".")
-    button_equal = gr.Button("=")
+    button_eq = gr.Button("=")
     button_add = gr.Button("+")
 
     button_c = gr.Button("C")
 
-    button_7.click(
-        lambda: math_expression.update(value=math_expression.value + "7"),
-        inputs=None,
-        outputs=[math_expression],
-    )
+    button_7.click(lambda _, textbox_value: update_textbox(textbox_value, "7"), inputs=[textbox], outputs=[textbox])
+    button_8.click(lambda _, textbox_value: update_textbox(textbox_value, "8"), inputs=[textbox], outputs=[textbox])
+    button_9.click(lambda _, textbox_value: update_textbox(textbox_value, "9"), inputs=[textbox], outputs=[textbox])
+    button_div.click(lambda _, textbox_value: update_textbox(textbox_value, "/"), inputs=[textbox], outputs=[textbox])
 
-    button_8.click(
-        lambda: math_expression.update(value=math_expression.value + "8"),
-        inputs=None,
-        outputs=[math_expression],
-    )
+    button_4.click(lambda _, textbox_value: update_textbox(textbox_value, "4"), inputs=[textbox], outputs=[textbox])
+    button_5.click(lambda _, textbox_value: update_textbox(textbox_value, "5"), inputs=[textbox], outputs=[textbox])
+    button_6.click(lambda _, textbox_value: update_textbox(textbox_value, "6"), inputs=[textbox], outputs=[textbox])
+    button_mul.click(lambda _, textbox_value: update_textbox(textbox_value, "*"), inputs=[textbox], outputs=[textbox])
 
-    button_9.click(
-        lambda: math_expression.update(value=math_expression.value + "9"),
-        inputs=None,
-        outputs=[math_expression],
-    )
+    button_1.click(lambda _, textbox_value: update_textbox(textbox_value, "1"), inputs=[textbox], outputs=[textbox])
+    button_2.click(lambda _, textbox_value: update_textbox(textbox_value, "2"), inputs=[textbox], outputs=[textbox])
+    button_3.click(lambda _, textbox_value: update_textbox(textbox_value, "3"), inputs=[textbox], outputs=[textbox])
+    button_sub.click(lambda _, textbox_value: update_textbox(textbox_value, "-"), inputs=[textbox], outputs=[textbox])
 
-    button_4.click(
-        lambda: math_expression.update(value=math_expression.value + "4"),
-        inputs=None,
-        outputs=[math_expression],
-    )
+    button_0.click(lambda _, textbox_value: update_textbox(textbox_value, "0"), inputs=[textbox], outputs=[textbox])
+    button_dot.click(lambda _, textbox_value: update_textbox(textbox_value, "."), inputs=[textbox], outputs=[textbox])
+    button_eq.click(lambda _, textbox_value: update_textbox(textbox_value, "="), inputs=[textbox], outputs=[textbox])
+    button_add.click(lambda _, textbox_value: update_textbox(textbox_value, "+"), inputs=[textbox], outputs=[textbox])
 
-    button_5.click(
-        lambda: math_expression.update(value=math_expression.value + "5"),
-        inputs=None,
-        outputs=[math_expression],
-    )
+    button_c.click(lambda _, __: clear_textbox(), inputs=None, outputs=[textbox])
 
-    button_6.click(
-        lambda: math_expression.update(value=math_expression.value + "6"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_1.click(
-        lambda: math_expression.update(value=math_expression.value + "1"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_2.click(
-        lambda: math_expression.update(value=math_expression.value + "2"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_3.click(
-        lambda: math_expression.update(value=math_expression.value + "3"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_0.click(
-        lambda: math_expression.update(value=math_expression.value + "0"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_dot.click(
-        lambda: math_expression.update(value=math_expression.value + "."),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_add.click(
-        lambda: math_expression.update(value=math_expression.value + "+"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_sub.click(
-        lambda: math_expression.update(value=math_expression.value + "-"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_mul.click(
-        lambda: math_expression.update(value=math_expression.value + "*"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_div.click(
-        lambda: math_expression.update(value=math_expression.value + "/"),
-        inputs=None,
-        outputs=[math_expression],
-    )
-
-    button_equal.click(
-        calculator_interface,
-        inputs=[math_expression],
-        outputs=[result],
-    )
-
-    button_c.click(
-        clear_input,
-        inputs=[math_expression],
-        outputs=[math_expression, result],
-    )
-
-    gr.Columns([button_7, button_8, button_9, button_div])
-    gr.Columns([button_4, button_5, button_6, button_mul])
-    gr.Columns([button_1, button_2, button_3, button_sub])
-    gr.Columns([button_0, button_dot, button_equal, button_add])
-    gr.Columns([button_c])
+    gr.Columns([gr.Rows([button_7, button_8, button_9, button_div]), 
+                 gr.Rows([button_4, button_5, button_6, button_mul]), 
+                 gr.Rows([button_1, button_2, button_3, button_sub]), 
+                 gr.Rows([button_0, button_dot, button_eq, button_add])], 
+                gr.Rows([button_c]))
 
 if __name__ == "__main__":
     demo.launch()
