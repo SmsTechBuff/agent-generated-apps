@@ -1,150 +1,152 @@
 import gradio as gr
 
-def calculate(num1, operator, num2):
+def calculator_interface(math_expression):
     try:
-        if operator == "+":
-            return num1 + num2
-        elif operator == "-":
-            return num1 - num2
-        elif operator == "*":
-            return num1 * num2
-        elif operator == "/":
-            if num2 == 0:
-                return "Error: Division by zero"
-            return num1 / num2
-        else:
-            return "Error: Invalid operator"
+        result = eval(math_expression)
+        return str(result)
+    except ZeroDivisionError:
+        return "Error: Division by zero"
     except Exception as e:
         return str(e)
 
-def update_num1(num1, digit):
-    if num1 == "" or num1 == 0:
-        return digit
-    else:
-        return str(num1) + str(digit)
-
-def update_num2(num2, digit):
-    if num2 == "" or num2 == 0:
-        return digit
-    else:
-        return str(num2) + str(digit)
-
-def clear(num1, num2, operator, result):
-    return "", "", "", ""
+def clear_input(math_expression):
+    return ""
 
 demo = gr.Blocks()
 
 with demo:
-    gr.Markdown("# Calculator App")
-    num1 = gr.Textbox(label="Number 1", placeholder="0")
-    operator = gr.Dropdown(["+", "-", "*", "/"], label="Operator")
-    num2 = gr.Textbox(label="Number 2", placeholder="0")
+    math_expression = gr.Textbox(label="Calculator")
     result = gr.Textbox(label="Result")
 
-    gr.Button("7").click(
-        lambda num1: update_num1(num1, "7"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("8").click(
-        lambda num1: update_num1(num1, "8"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("9").click(
-        lambda num1: update_num1(num1, "9"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("/").click(
-        lambda: "/",
+    button_7 = gr.Button("7")
+    button_8 = gr.Button("8")
+    button_9 = gr.Button("/")
+    button_div = gr.Button("/")
+
+    button_4 = gr.Button("4")
+    button_5 = gr.Button("5")
+    button_6 = gr.Button("*")
+    button_mul = gr.Button("*")
+
+    button_1 = gr.Button("1")
+    button_2 = gr.Button("2")
+    button_3 = gr.Button("-")
+    button_sub = gr.Button("-")
+
+    button_0 = gr.Button("0")
+    button_dot = gr.Button(".")
+    button_equal = gr.Button("=")
+    button_add = gr.Button("+")
+
+    button_c = gr.Button("C")
+
+    button_7.click(
+        lambda: math_expression.update(value=math_expression.value + "7"),
         inputs=None,
-        outputs=operator,
+        outputs=[math_expression],
     )
 
-    gr.Button("4").click(
-        lambda num1: update_num1(num1, "4"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("5").click(
-        lambda num1: update_num1(num1, "5"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("6").click(
-        lambda num1: update_num1(num1, "6"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("*").click(
-        lambda: "*",
+    button_8.click(
+        lambda: math_expression.update(value=math_expression.value + "8"),
         inputs=None,
-        outputs=operator,
+        outputs=[math_expression],
     )
 
-    gr.Button("1").click(
-        lambda num1: update_num1(num1, "1"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("2").click(
-        lambda num1: update_num1(num1, "2"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("3").click(
-        lambda num1: update_num1(num1, "3"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("-").click(
-        lambda: "-",
+    button_9.click(
+        lambda: math_expression.update(value=math_expression.value + "9"),
         inputs=None,
-        outputs=operator,
+        outputs=[math_expression],
     )
 
-    gr.Button("0").click(
-        lambda num1: update_num1(num1, "0"),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button(".").click(
-        lambda num1: update_num1(num1, "."),
-        inputs=num1,
-        outputs=num1,
-    )
-    gr.Button("=").click(
-        lambda num1, operator, num2: calculate(float(num1), operator, float(num2)),
-        inputs=[num1, operator, num2],
-        outputs=result,
-    )
-    gr.Button("+").click(
-        lambda: "+",
+    button_4.click(
+        lambda: math_expression.update(value=math_expression.value + "4"),
         inputs=None,
-        outputs=operator,
+        outputs=[math_expression],
     )
 
-    gr.Button("Clear").click(
-        clear,
-        inputs=[num1, num2, operator, result],
-        outputs=[num1, num2, operator, result],
+    button_5.click(
+        lambda: math_expression.update(value=math_expression.value + "5"),
+        inputs=None,
+        outputs=[math_expression],
     )
 
-    gr.Grid(
-        [
-            [gr.Button("7"), gr.Button("8"), gr.Button("9"), gr.Button("/")],
-            [gr.Button("4"), gr.Button("5"), gr.Button("6"), gr.Button("*")],
-            [gr.Button("1"), gr.Button("2"), gr.Button("3"), gr.Button("-")],
-            [gr.Button("0"), gr.Button("."), gr.Button("="), gr.Button("+")],
-            [gr.Button("Clear")],
-        ]
+    button_6.click(
+        lambda: math_expression.update(value=math_expression.value + "6"),
+        inputs=None,
+        outputs=[math_expression],
     )
-    gr.Grid(
-        [
-            [num1, operator, num2, result],
-        ]
+
+    button_1.click(
+        lambda: math_expression.update(value=math_expression.value + "1"),
+        inputs=None,
+        outputs=[math_expression],
     )
+
+    button_2.click(
+        lambda: math_expression.update(value=math_expression.value + "2"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_3.click(
+        lambda: math_expression.update(value=math_expression.value + "3"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_0.click(
+        lambda: math_expression.update(value=math_expression.value + "0"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_dot.click(
+        lambda: math_expression.update(value=math_expression.value + "."),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_add.click(
+        lambda: math_expression.update(value=math_expression.value + "+"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_sub.click(
+        lambda: math_expression.update(value=math_expression.value + "-"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_mul.click(
+        lambda: math_expression.update(value=math_expression.value + "*"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_div.click(
+        lambda: math_expression.update(value=math_expression.value + "/"),
+        inputs=None,
+        outputs=[math_expression],
+    )
+
+    button_equal.click(
+        calculator_interface,
+        inputs=[math_expression],
+        outputs=[result],
+    )
+
+    button_c.click(
+        clear_input,
+        inputs=[math_expression],
+        outputs=[math_expression, result],
+    )
+
+    gr.Columns([button_7, button_8, button_9, button_div])
+    gr.Columns([button_4, button_5, button_6, button_mul])
+    gr.Columns([button_1, button_2, button_3, button_sub])
+    gr.Columns([button_0, button_dot, button_equal, button_add])
+    gr.Columns([button_c])
 
 if __name__ == "__main__":
     demo.launch()
